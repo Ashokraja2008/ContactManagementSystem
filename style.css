@@ -1,0 +1,315 @@
+/* =====================================================
+   CONTACT MANAGEMENT SYSTEM - COMMON STYLE
+   ===================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+/* ================= NAVBAR ================= */
+
+nav {
+    width: 100%;
+    padding: 20px 8%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.20);
+}
+
+nav h2 {
+    font-size: 25px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 25px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* ================= MAIN CONTAINER ================= */
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 40px auto;
+}
+
+/* ================= TITLE ================= */
+
+.title {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.title h1 {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.title p {
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+/* ================= HOME HERO ================= */
+
+.hero {
+    text-align: center;
+    padding: 70px 20px;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 18px;
+}
+
+.hero p {
+    max-width: 800px;
+    margin: auto;
+    font-size: 18px;
+    line-height: 1.7;
+}
+
+/* ================= BUTTONS ================= */
+
+button,
+.btn {
+    display: inline-block;
+    padding: 13px 24px;
+    border: none;
+    border-radius: 8px;
+    background: #315dcc;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    margin: 5px;
+}
+
+button:hover,
+.btn:hover {
+    background: #2449a8;
+    transform: translateY(-1px);
+}
+
+/* ================= HOME BUTTON AREA ================= */
+
+.hero-buttons,
+.buttons {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ================= CARDS ================= */
+
+.cards {
+    width: 90%;
+    max-width: 900px;
+    margin: 0 auto 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.25);
+    padding: 30px 20px;
+    border-radius: 15px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card h2,
+.card h3 {
+    margin-bottom: 12px;
+}
+
+.card p {
+    line-height: 1.6;
+}
+
+/* ================= COMMON WHITE BOX ================= */
+
+.box,
+.section {
+    background: white;
+    color: #333;
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.20);
+}
+
+.box h2,
+.section h2 {
+    color: #3154a5;
+    margin-bottom: 15px;
+}
+
+.box p,
+.section p {
+    line-height: 1.7;
+}
+
+/* ================= FORMS ================= */
+
+input {
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #315dcc;
+}
+
+/* ================= TABLE ================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th,
+td {
+    padding: 13px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background: #315dcc;
+    color: white;
+}
+
+/* ================= RESULT ================= */
+
+.result {
+    margin-top: 20px;
+    padding: 18px;
+    background: #f1f4ff;
+    color: #333;
+    border-radius: 10px;
+    line-height: 1.7;
+}
+
+/* ================= ALGORITHM BOX ================= */
+
+.algorithm {
+    background: #f1f4ff;
+    color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 15px;
+    line-height: 1.8;
+}
+
+/* ================= SEARCH AREA ================= */
+
+.search-area {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.search-area input {
+    flex: 1;
+    min-width: 250px;
+}
+
+/* ================= DANGER BUTTON ================= */
+
+.danger {
+    background: #e53935 !important;
+}
+
+.danger:hover {
+    background: #c62828 !important;
+}
+
+/* ================= FOOTER ================= */
+
+footer {
+    text-align: center;
+    padding: 25px;
+    margin-top: 40px;
+    background: rgba(0, 0, 0, 0.20);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 800px) {
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    nav {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav a {
+        margin: 0 8px;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+    }
+
+    .title h1 {
+        font-size: 34px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .container {
+        width: 94%;
+    }
+
+    .box,
+    .section {
+        padding: 20px;
+    }
+
+    .hero {
+        padding: 45px 10px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .hero p {
+        font-size: 15px;
+    }
+
+    input {
+        width: 100%;
+    }
+}

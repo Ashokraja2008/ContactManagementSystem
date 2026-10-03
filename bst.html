@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>BST - Contact Management System</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<nav>
+
+    <h2>📱 Contact Manager</h2>
+
+    <div>
+
+        <a href="index.html">Home</a>
+
+        <a href="contacts.html">Contacts</a>
+
+        <a href="bst.html">BST</a>
+
+        <a href="hashing.html">Hashing</a>
+
+    </div>
+
+</nav>
+
+
+<div class="container">
+
+    <div class="title">
+
+        <h1>🌳 Binary Search Tree</h1>
+
+        <p>
+            Manage contacts using BST operations
+        </p>
+
+    </div>
+
+
+    <!-- ================= BST INFORMATION ================= -->
+
+    <div class="info-box">
+
+        <h2>What is BST?</h2>
+
+        <p>
+            A Binary Search Tree (BST) is a tree data structure where
+            values smaller than the root are placed on the left side
+            and values greater than the root are placed on the right side.
+        </p>
+
+        <div class="algorithm">
+
+            <strong>BST Operations:</strong>
+
+            <br><br>
+
+            1. Insert contact based on name
+            <br>
+
+            2. Search contact using name
+            <br>
+
+            3. Inorder traversal displays contacts alphabetically
+            <br>
+
+            4. Each node contains one contact
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= BST CONTROL ================= -->
+
+    <div class="control-box">
+
+        <h2>BST Search</h2>
+
+        <div class="input-row">
+
+            <input
+                type="text"
+                id="bstSearch"
+                placeholder="Enter contact name"
+            >
+
+            <button onclick="searchBST()">
+                🔍 Search
+            </button>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button onclick="buildBST()">
+                🌳 Build BST
+            </button>
+
+
+            <button onclick="inorderBST()">
+                📋 Inorder Traversal
+            </button>
+
+
+            <button
+                class="clear-btn"
+                onclick="clearBST()">
+
+                Clear
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="searchResult"
+            class="search-result">
+
+            Loading contacts from MySQL...
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= BST STRUCTURE ================= -->
+
+    <div class="result-box">
+
+        <h2>BST Structure</h2>
+
+        <div
+            id="tree"
+            class="tree">
+
+            <div class="empty">
+                Loading BST...
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+
+    <p>
+        Contact Management System | Binary Search Tree
+    </p>
+
+</footer>
+
+
+<script>
+
+    // =====================================================
+    // BST NODE
+    // =====================================================
+
+    class Node {
+
+        constructor(contact) {
+
+            this.contact = contact;
+
+            this.left = null;
+
+            this.right = null;
+
+        }
+
+    }
+
+
+    // =====================================================
+    // BST ROOT
+    // =====================================================
+
+    let root = null;
+
+
+    // =====================================================
+    // CONTACTS FROM MYSQL
+    // =====================================================
+
+    let contacts = [];
+
+
+    // =====================================================
+    // INSERT NODE INTO BST
+    // =====================================================
+
+    function insertNode(root, contact) {
+
+        if (root === null) {
+
+            return new Node(contact);
+
+        }
+
+
+        const contactName =
+            contact.name.toLowerCase();
+
+
+        const rootName =
+            root.contact.name.toLowerCase();
+
+
+        if (contactName < rootName) {
+
+            root.left =
+                insertNode(
+                    root.left,
+                    contact
+                );
+
+        }
+
+        else if (contactName > rootName) {
+
+            root.right =
+                insertNode(
+                    root.right,
+                    contact
+                );
+
+        }
+
+        return root;
+
+    }
+
+
+    // =====================================================
+    // LOAD CONTACTS FROM MYSQL
+    // =====================================================
+
+    async function loadContacts() {
+
+        try {
+
+            const response =
+                await fetch("get_contacts.php");
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to connect to PHP"
+                );
+
+            }
+
+
+            contacts =
+                await response.json();
+
+
+            if (contacts.length === 0) {
+
+                document.getElementById(
+                    "tree"
+                ).innerHTML =
+                    '<div class="empty">No contacts available. Add contacts first.</div>';
+
+                document.getElementById(
+                    "searchResult"
+                ).innerHTML =
+                    "⚠️ No contacts found in MySQL.";
+
+                return;
+
+            }
+
+
+            buildBST();
+
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+
+            document.getElementById(
+                "tree"
+            ).innerHTML =
+                '<div class="empty">Unable to load contacts.</div>';
+
+
+            document.getElementById(
+                "searchResult"
+            ).innerHTML =
+                "❌ Unable to load contacts from MySQL.";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // BUILD BST
+    // =====================================================
+
+    function buildBST() {
+
+        root = null;
+
+
+        if (contacts.length === 0) {
+
+            document.getElementById(
+                "tree"
+            ).innerHTML =
+                '<div class="empty">No contacts available. Add contacts first.</div>';
+
+
+            document.getElementById(
+                "searchResult"
+            ).innerHTML =
+                "⚠️ No contacts found.";
+
+            return;
+
+        }
+
+
+        contacts.forEach(
+            contact => {
+
+                root =
+                    insertNode(
+                        root,
+                        contact
+                    );
+
+            }
+        );
+
+
+        displayTree();
+
+
+        document.getElementById(
+            "searchResult"
+        ).innerHTML =
+            "✅ BST created successfully with " +
+            contacts.length +
+            " contact(s).";
+
+    }
+
+
+    // =====================================================
+    // INORDER TRAVERSAL
+    // =====================================================
+
+    function inorder(root, result = []) {
+
+        if (root !== null) {
+
+            inorder(
+                root.left,
+                result
+            );
+
+
+            result.push(
+                root.contact
+            );
+
+
+            inorder(
+                root.right,
+                result
+            );
+
+        }
+
+
+        return result;
+
+    }
+
+
+    // =====================================================
+    // DISPLAY INORDER TRAVERSAL
+    // =====================================================
+
+    function inorderBST() {
+
+        if (root === null) {
+
+            buildBST();
+
+        }
+
+
+        if (root === null) {
+
+            return;
+
+        }
+
+
+        const result =
+            inorder(root);
+
+
+        let html = "";
+
+
+        result.forEach(
+            (contact, index) => {
+
+                html += `
+
+                    <div class="node">
+
+                        ${index + 1}. ${contact.name}
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+        document.getElementById(
+            "tree"
+        ).innerHTML = html;
+
+
+        document.getElementById(
+            "searchResult"
+        ).innerHTML =
+            "📋 Inorder Traversal: Contacts are displayed in alphabetical order.";
+
+    }
+
+
+    // =====================================================
+    // SEARCH NODE
+    // =====================================================
+
+    function searchNode(root, name) {
+
+        if (root === null) {
+
+            return null;
+
+        }
+
+
+        const current =
+            root.contact.name.toLowerCase();
+
+
+        const target =
+            name.toLowerCase();
+
+
+        if (target === current) {
+
+            return root;
+
+        }
+
+
+        if (target < current) {
+
+            return searchNode(
+                root.left,
+                name
+            );
+
+        }
+
+
+        return searchNode(
+            root.right,
+            name
+        );
+
+    }
+
+
+    // =====================================================
+    // SEARCH BST
+    // =====================================================
+
+    function searchBST() {
+
+        const name =
+            document
+                .getElementById("bstSearch")
+                .value
+                .trim();
+
+
+        const message =
+            document.getElementById(
+                "searchResult"
+            );
+
+
+        if (name === "") {
+
+            message.innerHTML =
+                "⚠️ Please enter a contact name.";
+
+            return;
+
+        }
+
+
+        if (root === null) {
+
+            buildBST();
+
+        }
+
+
+        if (root === null) {
+
+            return;
+
+        }
+
+
+        const result =
+            searchNode(
+                root,
+                name
+            );
+
+
+        if (result !== null) {
+
+            message.innerHTML =
+                "✅ Contact Found — " +
+                result.contact.name +
+                " | " +
+                result.contact.phone +
+                " | " +
+                result.contact.email;
+
+        }
+
+        else {
+
+            message.innerHTML =
+                "❌ Contact not found in BST.";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // DISPLAY BST
+    // =====================================================
+
+    function displayTree() {
+
+        if (root === null) {
+
+            document.getElementById(
+                "tree"
+            ).innerHTML =
+                '<div class="empty">BST is empty.</div>';
+
+            return;
+
+        }
+
+
+        const result =
+            inorder(root);
+
+
+        let html = "";
+
+
+        result.forEach(
+            contact => {
+
+                html += `
+
+                    <div class="node">
+
+                        ${contact.name}
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+        document.getElementById(
+            "tree"
+        ).innerHTML = html;
+
+    }
+
+
+    // =====================================================
+    // CLEAR BST
+    // =====================================================
+
+    function clearBST() {
+
+        root = null;
+
+
+        document.getElementById(
+            "tree"
+        ).innerHTML =
+            '<div class="empty">BST cleared.</div>';
+
+
+        document.getElementById(
+            "searchResult"
+        ).innerHTML =
+            "BST has been cleared.";
+
+    }
+
+
+    // =====================================================
+    // PAGE LOAD
+    // =====================================================
+
+    loadContacts();
+
+</script>
+
+
+</body>
+
+</html>

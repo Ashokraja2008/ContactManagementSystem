@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Hashing - Contact Management System</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<nav>
+
+    <h2>📱 Contact Manager</h2>
+
+    <div>
+
+        <a href="index.html">Home</a>
+
+        <a href="contacts.html">Contacts</a>
+
+        <a href="bst.html">BST</a>
+
+        <a href="hashing.html">Hashing</a>
+
+    </div>
+
+</nav>
+
+
+<div class="container">
+
+    <div class="title">
+
+        <h1>⚡ Hashing</h1>
+
+        <p>
+            Fast contact searching using Hash Table
+        </p>
+
+    </div>
+
+
+    <!-- ================= HASHING INFORMATION ================= -->
+
+    <div class="box">
+
+        <h2>What is Hashing?</h2>
+
+        <p>
+            Hashing is a data structure technique used to store and
+            retrieve data quickly. A hash function converts a key into
+            an index in a hash table.
+        </p>
+
+        <div class="algorithm">
+
+            <strong>Hashing Operations:</strong>
+
+            <br><br>
+
+            1. Take the contact name as the key.
+            <br>
+
+            2. Calculate a hash value from the name.
+            <br>
+
+            3. Store the contact in the corresponding bucket.
+            <br>
+
+            4. Use the same hash function during searching.
+            <br>
+
+            5. Handle collisions using separate chaining.
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= HASH SEARCH ================= -->
+
+    <div class="box">
+
+        <h2>Hash Search</h2>
+
+        <div class="search-area">
+
+            <input
+                type="text"
+                id="hashSearch"
+                placeholder="Enter contact name"
+            >
+
+            <button onclick="searchHash()">
+                🔍 Search
+            </button>
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button onclick="buildHashTable()">
+                ⚡ Build Hash Table
+            </button>
+
+            <button onclick="showHashTable()">
+                📋 Show Hash Table
+            </button>
+
+            <button
+                class="danger"
+                onclick="clearHashTable()">
+
+                Clear
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="hashResult"
+            class="result">
+
+            Loading contacts from MySQL...
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= HASH TABLE ================= -->
+
+    <div class="box">
+
+        <h2>Hash Table</h2>
+
+        <div class="hash-table">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Index</th>
+
+                        <th>
+                            Contacts Stored in Bucket
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="hashTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="2"
+                            class="empty">
+
+                            Loading Hash Table...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<footer>
+
+    <p>
+        Contact Management System | BST & Hashing Project
+    </p>
+
+</footer>
+
+
+<script>
+
+    // =====================================================
+    // HASH TABLE SIZE
+    // =====================================================
+
+    const TABLE_SIZE = 10;
+
+
+    // =====================================================
+    // CONTACTS FROM MYSQL
+    // =====================================================
+
+    let contacts = [];
+
+
+    // =====================================================
+    // HASH TABLE
+    // =====================================================
+
+    let hashTable = [];
+
+
+    // =====================================================
+    // INITIALIZE HASH TABLE
+    // =====================================================
+
+    function initializeHashTable() {
+
+        hashTable = [];
+
+        for (
+            let i = 0;
+            i < TABLE_SIZE;
+            i++
+        ) {
+
+            hashTable.push([]);
+
+        }
+
+    }
+
+
+    // =====================================================
+    // HASH FUNCTION
+    // =====================================================
+
+    function hashFunction(name) {
+
+        let hash = 0;
+
+
+        for (
+            let i = 0;
+            i < name.length;
+            i++
+        ) {
+
+            hash =
+                (
+                    hash * 31 +
+                    name.charCodeAt(i)
+                ) % TABLE_SIZE;
+
+        }
+
+
+        return hash;
+
+    }
+
+
+    // =====================================================
+    // LOAD CONTACTS FROM MYSQL
+    // =====================================================
+
+    async function loadContacts() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "get_contacts.php"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to connect to PHP"
+                );
+
+            }
+
+
+            contacts =
+                await response.json();
+
+
+            if (
+                contacts.length === 0
+            ) {
+
+                document.getElementById(
+                    "hashResult"
+                ).innerHTML =
+                    "⚠️ No contacts available. Add contacts first.";
+
+                return;
+
+            }
+
+
+            buildHashTable();
+
+        }
+
+        catch (error) {
+
+            console.error(error);
+
+
+            document.getElementById(
+                "hashResult"
+            ).innerHTML =
+                "❌ Unable to load contacts from MySQL.";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // BUILD HASH TABLE
+    // =====================================================
+
+    function buildHashTable() {
+
+        initializeHashTable();
+
+
+        if (
+            contacts.length === 0
+        ) {
+
+            document.getElementById(
+                "hashResult"
+            ).innerHTML =
+                "⚠️ No contacts available. Add contacts first.";
+
+            showHashTable();
+
+            return;
+
+        }
+
+
+        contacts.forEach(
+            contact => {
+
+                const index =
+                    hashFunction(
+                        contact.name.toLowerCase()
+                    );
+
+
+                // Separate chaining
+                hashTable[index].push(
+                    contact
+                );
+
+            }
+        );
+
+
+        showHashTable();
+
+
+        document.getElementById(
+            "hashResult"
+        ).innerHTML =
+            "✅ Hash table created successfully with " +
+            contacts.length +
+            " contact(s).";
+
+    }
+
+
+    // =====================================================
+    // SHOW HASH TABLE
+    // =====================================================
+
+    function showHashTable() {
+
+        const tableBody =
+            document.getElementById(
+                "hashTableBody"
+            );
+
+
+        tableBody.innerHTML = "";
+
+
+        hashTable.forEach(
+            (bucket, index) => {
+
+                let contactText = "";
+
+
+                if (
+                    bucket.length === 0
+                ) {
+
+                    contactText =
+                        "Empty";
+
+                }
+
+                else {
+
+                    contactText =
+                        bucket
+                            .map(
+                                contact =>
+                                    contact.name +
+                                    " (" +
+                                    contact.phone +
+                                    ")"
+                            )
+                            .join("<br>");
+
+                }
+
+
+                tableBody.innerHTML += `
+
+                    <tr>
+
+                        <td class="bucket">
+                            ${index}
+                        </td>
+
+                        <td>
+                            ${contactText}
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // SEARCH HASH TABLE
+    // =====================================================
+
+    function searchHash() {
+
+        const name =
+            document
+                .getElementById(
+                    "hashSearch"
+                )
+                .value
+                .trim();
+
+
+        const resultBox =
+            document.getElementById(
+                "hashResult"
+            );
+
+
+        if (name === "") {
+
+            resultBox.innerHTML =
+                "⚠️ Please enter a contact name.";
+
+            return;
+
+        }
+
+
+        // If table is empty, build it first
+
+        if (
+            hashTable.length === 0
+        ) {
+
+            buildHashTable();
+
+        }
+
+
+        if (
+            hashTable.length === 0
+        ) {
+
+            return;
+
+        }
+
+
+        const index =
+            hashFunction(
+                name.toLowerCase()
+            );
+
+
+        const bucket =
+            hashTable[index];
+
+
+        // Search inside bucket
+        // This also handles collisions
+
+        const contact =
+            bucket.find(
+                item =>
+                    item.name.toLowerCase() ===
+                    name.toLowerCase()
+            );
+
+
+        if (contact) {
+
+            resultBox.innerHTML = `
+
+                ✅ Contact Found!<br>
+
+                <strong>Name:</strong>
+                ${contact.name}
+                <br>
+
+                <strong>Phone:</strong>
+                ${contact.phone}
+                <br>
+
+                <strong>Email:</strong>
+                ${contact.email}
+                <br>
+
+                <strong>Hash Index:</strong>
+                ${index}
+
+            `;
+
+        }
+
+        else {
+
+            resultBox.innerHTML =
+                "❌ Contact not found in Hash Table.";
+
+        }
+
+    }
+
+
+    // =====================================================
+    // CLEAR HASH TABLE
+    // =====================================================
+
+    function clearHashTable() {
+
+        initializeHashTable();
+
+
+        document.getElementById(
+            "hashTableBody"
+        ).innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="2"
+                    class="empty">
+
+                    Hash table cleared.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        document.getElementById(
+            "hashResult"
+        ).innerHTML =
+            "Hash table has been cleared.";
+
+    }
+
+
+    // =====================================================
+    // PAGE LOAD
+    // =====================================================
+
+    initializeHashTable();
+
+    loadContacts();
+
+</script>
+
+</body>
+
+</html>
